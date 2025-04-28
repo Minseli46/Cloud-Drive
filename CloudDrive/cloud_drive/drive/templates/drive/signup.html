@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Inscrivez-vous sur CloudDrive pour stocker et partager vos fichiers en toute sécurité.">
+    <meta name="keywords" content="CloudDrive, inscription, stockage, partage de fichiers, sécurité">
+    <title>Inscription - CloudDrive </title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        input[type="text"],
+        input[type="email"],
+        input[type="password"] {
+            @apply appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col">
+    <header class="bg-white shadow-sm">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="{% url 'home' %}" class="flex items-center">
+                {% comment %} <img class="h-8 w-auto mr-2" src="/static/img/logo.png" alt="Cloud Drive Logo"> {% endcomment %}
+                <span class="text-xl font-bold text-blue-600">CloudDrive </span>
+            </a>
+            <a href="{% url 'login' %}" class="text-gray-600 hover:text-gray-900">Connexion</a>
+        </nav>
+    </header>
+
+    <main class="flex-grow container mx-auto px-4 py-8">
+        <div class="max-w-md mx-auto">
+            <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                Créez votre compte
+            </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Ou
+                <a href="{% url 'login' %}" class="font-medium text-blue-600 hover:text-blue-500">
+                    connectez-vous si vous avez déjà un compte
+                </a>
+            </p>
+
+            <form class="mt-8 space-y-6" action="{% url 'signup' %}" method="post">
+                {% csrf_token %}
+                {% if form.non_field_errors %}
+                    <div class="rounded-md bg-red-50 p-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <h3 class="text-sm font-medium text-red-800">
+                                    Il y a eu des erreurs avec votre inscription
+                                </h3>
+                                <div class="mt-2 text-sm text-red-700">
+                                    <ul class="list-disc pl-5 space-y-1">
+                                        {% for error in form.non_field_errors %}
+                                            <li>{{ error }}</li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-700">
+                        Nom d'utilisateur
+                    </label>
+                    <div class="mt-1">
+                        <input id="username" name="username" type="text" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    {% if form.username.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.username.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-700">
+                        Adresse e-mail
+                    </label>
+                    <div class="mt-1">
+                        <input id="email" name="email" type="email" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    {% if form.email.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.email.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="password1" class="block text-sm font-medium text-gray-700">
+                        Mot de passe
+                    </label>
+                    <div class="mt-1">
+                        <input id="password1" name="password1" type="password" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    {% if form.password1.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.password1.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="password2" class="block text-sm font-medium text-gray-700">
+                        Confirmez le mot de passe
+                    </label>
+                    <div class="mt-1">
+                        <input id="password2" name="password2" type="password" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                    {% if form.password2.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.password2.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                        S'inscrire
+                    </button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="bg-white shadow-sm mt-auto">
+        <div class="container mx-auto px-4 py-4 text-center text-gray-600">
+            <p>© {% now "Y" %} CloudDrive . Tous droits réservés.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Ajoutez ici tout JavaScript spécifique à la page d'inscription si nécessaire
+    </script>
+</body>
+</html>

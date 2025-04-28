@@ -1,0 +1,73 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    font-family: Arial, sans-serif;
+    background-color: #f3f4f6;
+    margin: 0;
+}
+
+.login-container {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    text-align: center;
+}
+
+h2 {
+    margin-bottom: 20px;
+}
+
+input[type="text"], input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+form {
+    display: inline; /* Affiche le formulaire en ligne avec les autres éléments */
+    margin-left: 10px; /* Ajoute un espacement à gauche */
+}
+
+select {
+    margin-right: 5px; /* Espacement à droite pour le sélecteur */
+}
+
+.inline-form {
+    display: inline;
+}
+
+.message.error {
+    color: #D8000C;
+    background-color: #FFBABA;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}
+
+.message.success {
+    color: #4F8A10;
+    background-color: #DFF2BF;
+    padding: 10px;
+    margin-bottom: 10px;
+    border-radius: 5px;
+}

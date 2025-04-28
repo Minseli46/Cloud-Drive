@@ -1,0 +1,177 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Parcourir et gérer vos fichiers en ligne.">
+    <meta name="keywords" content="fichiers, gestion, cloud, drive, dossiers">
+    <title>Parcourir mes Fichiers - CloudDrive</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'drive/css/browse.css' %}">
+    <style>
+        /* Styles pour la popup de prévisualisation */
+        #previewPopup {
+            position: absolute;
+            z-index: 9999;
+            display: none;
+            background-color: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            text-align: center;
+        }
+        #previewPopup img, #previewPopup embed {
+            max-width: 100%;
+            max-height: 300px;
+        }
+        #previewPopup i {
+            font-size: 50px;
+        }
+    </style>
+</head>
+<body>
+     <!-- Bouton de retour au dashboard -->
+    <a href="{% url 'dashboard' %}" class="button mb-3">
+        <i class="fas fa-arrow-left icon"></i> Retour
+    </a>
+    <div class="container">
+        <h1><i class="fas fa-folder-open icon"></i> Parcourir mes Fichiers</h1>
+
+        <div class="actions">
+            <a href="{% url 'create_folder' %}" class="button button-success">
+                <i class="fas fa-plus icon"></i> Créer un Dossier
+            </a>
+
+            {% if current_folder and current_folder.parent_folder %}
+                <a href="{% url 'browse_folder' current_folder.parent_folder.id %}" class="button">
+                    <i class="fas fa-arrow-left icon"></i> Retour
+                </a>
+            {% endif %}
+        </div>
+
+        <h2><i class="fas fa-folder icon"></i> Dossiers</h2>
+        <ul class="folder-list">
+            {% for folder in folders %}
+                <li>
+                    <span class="item-name">
+                        <i class="fas fa-folder icon"></i> {{ folder.name }}
+                    </span>
+                    <div class="actions">
+                        <a href="{% url 'browse_folder' folder.id %}" class="button">
+                            <i class="fas fa-folder-open icon"></i> Ouvrir
+                        </a>
+                        <form action="{% url 'move_folder' folder.id current_folder.id|default:0 %}" method="post" class="inline-form">
+                            {% csrf_token %}
+                            <select name="target_folder_id" id="target_folder_{{ folder.id }}">
+                                <option value="">Déplacer vers...</option>
+                                {% for target_folder in folders %}
+                                    <option value="{{ target_folder.id }}">{{ target_folder.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="button">
+                                <i class="fas fa-exchange-alt icon"></i> Déplacer
+                            </button>
+                        </form>              
+                        <form action="{% url 'copy_folder' folder.id current_folder.id|default:0 %}" method="get" class="inline-form">
+                            <button type="submit" class="button">
+                                <i class="fas fa-copy icon"></i> Copier
+                            </button>
+                        </form>
+                        <a href="{% url 'delete_folder' folder.id %}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce dossier ?');" class="button button-danger">
+                            <i class="fas fa-trash-alt icon"></i> Supprimer
+                        </a>
+                    </div>
+                </li>
+            {% empty %}
+                <li>Aucun dossier disponible.</li>
+            {% endfor %}
+        </ul>
+
+        <h2><i class="fas fa-file icon"></i> Fichiers</h2>
+        <ul class="file-list">
+            {% for file in files %}
+                <li class="file-item" data-file="{{ file.file.url }}">
+                    <span class="item-name">
+                        <i class="fas fa-file icon"></i> {{ file.file.name }}
+                    </span>
+                    <div class="actions">
+                        <a href="{{ file.file.url }}" download class="button">
+                            <i class="fas fa-download icon"></i> Télécharger
+                        </a>
+                        <a href="{% url 'file_details' file.id %}" class="button">
+                            <i class="fas fa-info-circle icon"></i> Détails
+                        </a>
+                        <form action="{% url 'move_file' file.id current_folder.id|default:0 %}" method="get" class="inline-form">
+                            <select name="target_folder_id" id="target_folder_file_{{ file.id }}">
+                                <option value="">Déplacer vers...</option>
+                                {% for target_folder in folders %}
+                                    <option value="{{ target_folder.id }}">{{ target_folder.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <button type="submit" class="button">
+                                <i class="fas fa-exchange-alt icon"></i> Déplacer
+                            </button>
+                        </form>
+                        <form action="{% url 'copy_file' file.id current_folder.id|default:0 %}" method="get" class="inline-form">
+                            <button type="submit" class="button">
+                                <i class="fas fa-copy icon"></i> Copier
+                            </button>
+                        </form>                 
+                        <a href="{% url 'delete_file' file.id %}" onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce fichier ?');" class="button button-danger">
+                            <i class="fas fa-trash-alt icon"></i> Supprimer
+                        </a>
+                    </div>
+                </li>
+            {% empty %}
+                <li>Aucun fichier disponible.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Popup de prévisualisation -->
+    <div id="previewPopup"></div>
+
+    <script>
+        // Fonction pour afficher la prévisualisation lors du survol
+        document.querySelectorAll('.file-item').forEach(function(item) {
+            item.addEventListener('mouseenter', function(e) {
+                const previewPopup = document.getElementById('previewPopup');
+                const fileUrl = e.target.dataset.file;
+
+                // Vérifier si c'est une image
+if (fileUrl.includes('.jpg') || fileUrl.includes('.jpeg') || fileUrl.includes('.png') || fileUrl.includes('.gif')) {
+    previewPopup.innerHTML = `<img src="${fileUrl}" alt="Aperçu du fichier">`;
+// Vérifier si c'est un PDF
+} else if (fileUrl.includes('.pdf')) {
+    previewPopup.innerHTML = `<i class="fas fa-file-pdf"></i><p>PDF</p>`;
+// Vérifier si c'est un fichier texte
+} else if (fileUrl.includes('.txt') || fileUrl.includes('.docx') || fileUrl.includes('.doc')) {
+    previewPopup.innerHTML = `<i class="fas fa-file-word"></i><p>Document Word</p>`;
+// Vérifier si c'est un fichier Excel
+} else if (fileUrl.includes('.xlsx') || fileUrl.includes('.xls')) {
+    previewPopup.innerHTML = `<i class="fas fa-file-excel"></i><p>Document Excel</p>`;
+// Vérifier si c'est un fichier de code (exemple pour JS, HTML, CSS)
+} else if (fileUrl.includes('.js') || fileUrl.includes('.html') || fileUrl.includes('.css') || fileUrl.includes('.py') || fileUrl.includes('.java')) {
+    previewPopup.innerHTML = `<i class="fas fa-code"></i><p>Fichier Code</p>`;
+// Autres types de fichiers génériques
+} else {
+    previewPopup.innerHTML = `<i class="fas fa-file"></i><p>Autres</p>`;
+}
+
+
+                // Positionner la popup près du curseur
+                previewPopup.style.left = `${e.pageX + 10}px`;
+                previewPopup.style.top = `${e.pageY + 10}px`;
+                previewPopup.style.display = 'block';
+            });
+
+            item.addEventListener('mouseleave', function() {
+                const previewPopup = document.getElementById('previewPopup');
+                previewPopup.style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>

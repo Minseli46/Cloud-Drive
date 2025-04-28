@@ -1,0 +1,110 @@
+<!-- <!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Créer un nouveau dossier dans votre cloud drive.">
+    <meta name="keywords" content="cloud, drive, créer, dossier, nouveau">
+    <title>Créer un Nouveau Dossier</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        h1 { color: #333; }
+        form { max-width: 400px; padding: 20px; border: 1px solid #ddd; border-radius: 5px; }
+        label { font-weight: bold; margin-top: 10px; display: block; }
+        input[type="text"], button { width: 100%; padding: 10px; margin-top: 10px; }
+        button { background-color: #007bff; color: white; border: none; cursor: pointer; }
+        button:hover { background-color: #0056b3; }
+        .error { color: red; font-size: 0.9em; }
+        .message { color: green; font-size: 0.9em; }
+        .back-link { margin-top: 10px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <h1>Créer un Nouveau Dossier</h1>
+    
+    {% if messages %}
+        <div class="message">
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    <a href="{% url 'browse_files' %}" class="back-link">Retour à la Navigation</a>
+    
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Créer le Dossier</button>
+    </form>
+
+    {% if form.errors %}
+        <div class="error">
+            {% for field in form %}
+                {% for error in field.errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+</body>
+</html> -->
+
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Créer un nouveau dossier dans votre cloud drive.">
+    <meta name="keywords" content="cloud, drive, créer, dossier, nouveau">
+    <title>Créer un Nouveau Dossier</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'drive/css/create_folder.css' %}">
+</head>
+<body class="bg-light">
+    <div class="container mt-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h1 class="h3 mb-0">Créer un Nouveau Dossier</h1>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                <div class="alert alert-success">
+                    {% for message in messages %}
+                    <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <a href="{% url 'browse_files' %}" class="btn btn-secondary mb-3">
+                    <i class="bi bi-arrow-left"></i> Retour à la Navigation
+                </a>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-folder-plus"></i> Créer le Dossier
+                    </button>
+                </form>
+                {% if form.errors %}
+                <div class="alert alert-danger mt-3">
+                    {% for field in form %}
+                    {% for error in field.errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

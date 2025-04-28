@@ -1,0 +1,43 @@
+:root {
+    --primary-color: #4285f4; /* Bleu de l'image */
+    --primary-dark: #0056b3; /* Une nuance plus foncée de bleu */
+    --secondary-color: #f3f4f6;
+    --text-color: #1f2937;
+    --text-light: #6b7280;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.card {
+    border: none;
+    border-radius: 8px;
+}
+
+.card-header {
+    border-radius: 8px 8px 0 0;
+    padding: 1rem;
+    text-align: center;
+    background-color: var(--primary-color);
+    color: white; /* Texte blanc pour le contraste */
+}
+
+.card-body {
+    padding: 1.5rem;
+}
+.chart-size {
+    width: 300px !important; /* Définit la largeur à 300 pixels */
+    height: 300px !important; /* Définit la hauteur à 300 pixels */
+    margin: 0 auto; /* Centre le graphique si nécessaire */
+}

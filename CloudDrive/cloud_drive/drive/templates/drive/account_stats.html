@@ -1,0 +1,126 @@
+{% load static %}
+{% load humanize %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Statistiques d'utilisation de l'espace de stockage.">
+    <meta name="keywords" content="statistiques, utilisation, espace, cloud, drive">
+    <title>Statistiques d'utilisation</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'drive/css/account_stats.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h1 class="h3 mb-0">Statistiques d'utilisation</h1>
+            </div>
+            <div class="card-body">
+                <p class="mb-4">Total espace utilisé : {{ total_storage|intcomma }} octets</p>
+
+                <h2 class="h5 mb-3">Répartition de l'espace par format</h2>
+                <ul class="list-group mb-4">
+                    {% for entry in format_distribution %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ entry.file_type }} 
+                            <span class="badge bg-primary rounded-pill">{{ entry.total_size|intcomma }} octets</span>
+                        </li>
+                    {% empty %}
+                        <li class="list-group-item">Aucune donnée disponible.</li>
+                    {% endfor %}
+                </ul>
+
+                <h2 class="h5 mb-3">Graphique de répartition de l'espace par format</h2>
+                <div class="d-flex justify-content-center">
+                    <canvas id="spaceDistributionChart" class="chart-size"></canvas>
+                </div>
+            <!-- Bouton pour retourner au dashboard -->
+            <div class="mt-4 text-center">
+                <a href="{% url 'dashboard' %}" class="btn btn-primary">Retour</a>
+            </div>
+        </div>
+    </div>
+    </div> <!-- Closing orphan div -->
+    <script>
+        // Préparer les données pour le graphique
+        const labels = [
+            {% for entry in format_distribution %}
+                "{{ entry.file_type }}"{% if not forloop.last %},{% endif %}
+            {% empty %} "Aucun format"{% endfor %}
+        ];
+
+        const data = [
+            {% for entry in format_distribution %}
+                {{ entry.total_size }}{% if not forloop.last %},{% endif %}
+            {% empty %} 0{% endfor %}
+        ];
+
+        const colors = [
+        {% for entry in format_distribution %}
+        {% if entry.file_type == 'image/png' %}
+           'rgba(255, 99, 132, 0.2)'{% if not forloop.last %},{% endif %}
+        {% elif entry.file_type == 'video/mp4' %}
+            'rgba(54, 162, 235, 0.2)'{% if not forloop.last %},{% endif %}
+        {% elif entry.file_type == 'document' %}
+            'rgba(75, 192, 192, 0.2)'{% if not forloop.last %},{% endif %}
+        {% elif entry.file_type == 'application/pdf' %}
+            'rgba(153, 102, 255, 0.2)'{% if not forloop.last %},{% endif %}
+        {% elif entry.file_type == 'application/x-zip-compressed' %}
+            'rgba(255, 159, 64, 0.2)'{% if not forloop.last %},{% endif %}
+        {% elif entry.file_type == 'audio/mpeg' %}
+            'rgba(205, 109, 94, 0.2)'{% if not forloop.last %},{% endif %}
+        {% elif entry.file_type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' %}
+            'rgba(92, 84, 255, 0.2)'{% if not forloop.last %},{% endif %}
+        {% elif entry.file_type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' %}
+            'rgba(61, 193, 121, 0.2)'{% if not forloop.last %},{% endif %}
+        {% elif entry.file_type == 'text/x-python' %}
+            'rgba(0, 128, 0, 0.2)'{% if not forloop.last %},{% endif %}  <!-- Couleur pour Python -->
+        {% else %}
+            'rgba(201, 203, 207, 0.2)'{% if not forloop.last %},{% endif %}
+        {% endif %}
+    {% empty %} 'gray'{% endfor %}
+];
+
+        // Configuration du graphique en donut
+        const chartData = {
+            labels: labels,
+            datasets: [{
+                data: data,
+                backgroundColor: colors,
+                borderColor: colors.map(color => color.replace('0.2', '1')), // Couleurs des bordures
+                borderWidth: 2
+            }]
+        };
+
+        const config = {
+            type: 'doughnut',
+            data: chartData,
+            options: {
+                responsive: true, // Rendre le graphique responsive
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.label || '';
+                                let value = context.raw || 0;
+                                return `${label}: ${value} octets`;
+                            }
+                        }
+                    }
+                }
+            }
+        };
+
+        // Rendu du graphique
+        new Chart(
+            document.getElementById('spaceDistributionChart'),
+            config
+        );
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,58 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Tableau de bord de votre Cloud Drive. Gérez vos fichiers en ligne.">
+    <meta name="keywords" content="cloud, drive, fichiers, téléverser, tableau de bord">
+    <title>Tableau de Bord - CloudDrive</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'drive/css/dashboard.css' %}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-cloud"></i>
+                    CloudDrive
+                </div>
+                <div class="user-info">
+                    <span>Bienvenue, {{ user.username }}!</span>
+                    <a href="{% url 'logout' %}" class="btn">Déconnexion</a>
+                </div>
+            </div>
+        </div>
+    </header>
+    {% csrf_token %}
+    <main class="container">
+        <div class="dashboard-grid">
+            <a href="{% url 'browse_files' %}" class="dashboard-card">
+                <i class="fas fa-folder-open"></i>
+                <h2>Mes fichiers</h2>
+                <p>Parcourez et gérez vos fichiers</p>
+            </a>
+            <a href="{% url 'upload' %}" class="dashboard-card">
+                <i class="fas fa-upload"></i>
+                <h2>Téléverser</h2>
+                <p>Ajoutez de nouveaux fichiers à votre drive</p>
+            </a>
+            <a href="{% url 'account_stats' %}" class="dashboard-card">
+                <i class="fas fa-chart-bar"></i>
+                <h2>Statistiques</h2>
+                <p>Consultez vos statistiques d'utilisation</p>
+            </a>
+        </div>
+
+        <div class="storage-info">
+            <h2>Espace de stockage</h2>
+            <p>{{ total_size_mb }} Mo utilisés sur 100 Mo</p>
+            <div class="storage-bar">
+                <div class="storage-used" style="width:{{ total_size_mb }}%;"></div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
